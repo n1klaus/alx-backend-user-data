@@ -26,6 +26,21 @@ def filter_datum(fields: List[str], redaction: str,
     return message
 
 
+def get_logger() -> logging.Logger:
+    """
+    Returns a logger object
+    """
+    logging.basicConfig(level=logging.INFO, encoding="utf-8")
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.INFO)
+    formatter = RedactingFormatter(PII_FIELDS)
+    handler.setFormatter(formatter)
+    logger = logging.getLogger("user_data")
+    logger.addHandler(handler)
+    logger.propagate = False
+    return logger
+
+
 class RedactingFormatter(logging.Formatter):
     """ Redacting Formatter class
     """
@@ -35,12 +50,17 @@ class RedactingFormatter(logging.Formatter):
     SEPARATOR = ";"
 
     def __init__(self, fields: List[str]):
+        """Initializes format parameters"""
         super(RedactingFormatter, self).__init__(fmt=self.FORMAT)
         self.fields: list = fields
 
     def format(self, record: logging.LogRecord) -> str:
+        """Returns formatted record message with format settings"""
         msg: str = filter_datum(self.fields, self.REDACTION,
                                 record.getMessage(), self.SEPARATOR)
         return (self.FORMAT) % {"name": record.name, "message": msg,
                                 "levelname": record.levelname,
                                 "asctime": self.formatTime(record)}
+
+
+PII_FIELDS: tuple = ("email", "ip", "phone", "password", "ssn")
