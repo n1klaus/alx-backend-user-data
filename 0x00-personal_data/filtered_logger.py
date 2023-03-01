@@ -19,6 +19,7 @@ def filter_datum(fields: List[str], redaction: str,
         (str): the log message obfuscated
     """
     for field in fields:
-        sub: str = re.search(f"(?<={field}=).*?(?=;)", message, re.IGNORECASE)
+        sub: str = re.search(f"(?<={field}=).*?(?={separator})",
+                             message, re.IGNORECASE)
         message = re.sub(sub.group(0), redaction, message) if sub else None
     return message
