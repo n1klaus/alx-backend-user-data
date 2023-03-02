@@ -2,7 +2,7 @@
 """Use a regex to replace occurrences of certain field values."""
 
 import logging
-import mysql.connector
+from mysql.connector import connection, Error
 import os
 import re
 from typing import List
@@ -43,24 +43,6 @@ def get_logger() -> logging.Logger:
     return logger
 
 
-DBCONFIG = {
-    "user": os.getenv("PERSONAL_DATA_DB_USERNAME", "root"),
-    "password": os.getenv("PERSONAL_DATA_DB_PASSWORD", ""),
-    "host": os.getenv("PERSONAL_DATA_DB_HOST", "localhost"),
-    "database": os.getenv("PERSONAL_DATA_DB_NAME"),
-    "raise_on_warnings": True
-}
-
-
-def get_db():
-    """Returns connector to the database"""
-    try:
-        connector = mysql.connector.connection.MySQLConnection(**DBCONFIG)
-    except mysql.connector.Error:
-        raise
-    return connector
-
-
 class RedactingFormatter(logging.Formatter):
     """ Redacting Formatter class
     """
@@ -83,4 +65,50 @@ class RedactingFormatter(logging.Formatter):
                                 "asctime": self.formatTime(record)}
 
 
-PII_FIELDS: tuple = ("email", "ip", "phone", "password", "ssn")
+PII_FIELDS: tuple = ("email", "name", "phone", "password", "ssn")
+
+DBCONFIG = {
+    "user": os.getenv("PERSONAL_DATA_DB_USERNAME", "root"),
+    "password": os.getenv("PERSONAL_DATA_DB_PASSWORD", ""),
+    "host": os.getenv("PERSONAL_DATA_DB_HOST", "localhost"),
+    "database": os.getenv("PERSONAL_DATA_DB_NAME"),
+    "raise_on_warnings": True
+}
+
+
+def get_db() -> connection.MySQLConnection:
+    """Returns connector to the database"""
+    try:
+        connector = connection.MySQLConnection(**DBCONFIG)
+    except Error:
+        raise
+    return connector
+
+
+def main() -> None:
+    """
+    Retrieves all rows in the users table
+    and displays each row under a filtered format
+    """
+    logger: logging.Logger = get_logger()
+    db: connection.MySQLConnection = get_db()
+    curs = db.cursor()
+    curs.execute("SELECT * FROM users;")
+    for name, email, phone, ssn, password, ip, last_login, user_agent in curs:
+        mapping = {
+            "name": name,
+            "email": email,
+            "phone": phone,
+            "ssn": ssn,
+            "password": password,
+            "ip": ip,
+            "last_login": last_login,
+            "user_agent": user_agent
+        }
+        logger.log(logger.getEffectiveLevel(), **mapping)
+    curs.close()
+    db.close()
+
+
+if __name__ == "__main__":
+    main()
