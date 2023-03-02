@@ -2,6 +2,8 @@
 """Use a regex to replace occurrences of certain field values."""
 
 import logging
+import mysql.connector
+import os
 import re
 from typing import List
 
@@ -39,6 +41,24 @@ def get_logger() -> logging.Logger:
     logger.addHandler(handler)
     logger.propagate = False
     return logger
+
+
+DBCONFIG = {
+    "user": os.getenv("PERSONAL_DATA_DB_USERNAME", "root"),
+    "password": os.getenv("PERSONAL_DATA_DB_PASSWORD", ""),
+    "host": os.getenv("PERSONAL_DATA_DB_HOST", "localhost"),
+    "database": os.getenv("PERSONAL_DATA_DB_NAME"),
+    "raise_on_warnings": True
+}
+
+
+def get_db():
+    """Returns connector to the database"""
+    try:
+        connector = mysql.connector.connection.MySQLConnection(**DBCONFIG)
+    except mysql.connector.Error:
+        raise
+    return connector
 
 
 class RedactingFormatter(logging.Formatter):
