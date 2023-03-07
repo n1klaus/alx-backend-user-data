@@ -6,6 +6,7 @@ Module for basic authentication handling
 from api.v1.auth.auth import Auth
 import base64
 import re
+from typing import Tuple
 
 
 class BasicAuth(Auth):
@@ -39,3 +40,13 @@ class BasicAuth(Auth):
             return decoded_string.decode("utf-8")
         except BaseException:
             return None
+        
+    def extract_user_credentials(self, 
+                                 decoded_base64_authorization_header: str) \
+                                    -> Tuple[str, str]:
+        """Returns the user email and password from base64 decoded value"""
+        if decoded_base64_authorization_header is None or \
+            not isinstance(decoded_base64_authorization_header, str) or \
+            not ":" in decoded_base64_authorization_header:
+            return None, None
+        return tuple(re.split(":", decoded_base64_authorization_header))
