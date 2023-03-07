@@ -20,7 +20,6 @@ class Auth:
 
     def authorization_header(self, request=None) -> str:
         """Returns authorization header from a request if available"""
-        print(request.headers)
         if request is None or not request.headers.get("Authorization"):
             return None
         return request.headers.get("Authorization")
