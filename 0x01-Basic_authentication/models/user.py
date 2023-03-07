@@ -3,6 +3,7 @@
 """
 import hashlib
 from models.base import Base
+from typing import TypeVar
 
 
 class User(Base):
@@ -57,3 +58,4 @@ class User(Base):
             return "{}".format(self.last_name)
         else:
             return "{} {}".format(self.first_name, self.last_name)
+
