@@ -30,8 +30,8 @@ class Auth:
     def current_user(self, request=None) -> TypeVar('User'):
         """Returns authorized user from a request if available"""
         return None
-    
-    def session_cookie(self, request=None):
+
+    def session_cookie(self, request=None) -> str:
         """Returns a cookie value from a request"""
         if request is None:
             return None
