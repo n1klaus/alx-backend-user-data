@@ -38,8 +38,11 @@ def preliminaries() -> None:
     """Checks if authentication is required and meets the requirements"""
     if auth is not None:
         if auth.require_auth(request.path, TRUSTED_PATHS):
-            if not auth.authorization_header(request) or \
+            if os.getenv("AUTH_TYPE") == "session_auth" and \
                 not auth.session_cookie(request):
+                abort(401)
+            elif os.getenv("AUTH_TYPE") != "session_auth" and \
+                not auth.authorization_header(request):
                 abort(401)
             if not auth.current_user(request):
                 abort(403)
