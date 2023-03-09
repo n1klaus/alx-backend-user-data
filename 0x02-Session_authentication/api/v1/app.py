@@ -28,7 +28,8 @@ if os.getenv("AUTH_TYPE", None):
 TRUSTED_PATHS = [
     '/api/v1/status/',
     '/api/v1/unauthorized/',
-    '/api/v1/forbidden/'
+    '/api/v1/forbidden/',
+    '/api/v1/auth_session/login/'
 ]
 
 
@@ -37,7 +38,8 @@ def preliminaries() -> None:
     """Checks if authentication is required and meets the requirements"""
     if auth is not None:
         if auth.require_auth(request.path, TRUSTED_PATHS):
-            if not auth.authorization_header(request):
+            if not auth.authorization_header(request) or \
+                not auth.session_cookie(request):
                 abort(401)
             if not auth.current_user(request):
                 abort(403)
