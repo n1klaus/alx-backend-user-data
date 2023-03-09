@@ -35,6 +35,6 @@ class Auth:
         """Returns a cookie value from a request"""
         if request is None:
             return None
-        if SESSION_NAME == "_my_session_id":
-            return request.cookies.get(SESSION_NAME)
-        return None
+        #if SESSION_NAME == "_my_session_id":
+        return request.cookies.get(SESSION_NAME)
+        #return None
