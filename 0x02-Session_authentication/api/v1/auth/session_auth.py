@@ -4,7 +4,9 @@ Module for session authentication handling
 """
 
 from api.v1.auth.auth import Auth
+from models.user import User
 from uuid import uuid4
+
 
 class SessionAuth(Auth):
     """Session authentication scheme"""
@@ -23,3 +25,11 @@ class SessionAuth(Auth):
         if session_id is None or not isinstance(session_id, str):
             return None
         return SessionAuth.user_id_by_session_id.get(session_id)
+    
+    def current_user(self, request=None):
+        """Returns a user instance based on a cookie value"""
+        session_id: str = self.session_cookie(request)
+        if session_id:
+            user_id: str = SessionAuth.user_id_by_session_id.get(session_id)
+            return User.get(user_id)
+        return None
