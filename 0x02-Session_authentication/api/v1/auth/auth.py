@@ -5,6 +5,9 @@ Module for authentication handling
 
 from flask import request
 from typing import List, TypeVar
+import os
+
+SESSION_NAME = os.getenv("SESSION_NAME")
 
 
 class Auth:
@@ -26,4 +29,12 @@ class Auth:
 
     def current_user(self, request=None) -> TypeVar('User'):
         """Returns authorized user from a request if available"""
+        return None
+    
+    def session_cookie(self, request=None):
+        """Returns a cookie value from a request"""
+        if request is None:
+            return None
+        if SESSION_NAME == "_my_session_id":
+            return request.cookies.get(SESSION_NAME)
         return None
