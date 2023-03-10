@@ -24,7 +24,7 @@ def filter_datum(fields: List[str], redaction: str,
     for field in fields:
         sub: str = re.search(f"(?<={field}=).*?(?={separator})",
                              message, re.IGNORECASE)
-        message = re.sub(sub.group(0), redaction, message) if sub else None
+        message = re.sub(sub.group(0), redaction, message) if sub else message
     return message
 
 
@@ -58,11 +58,9 @@ class RedactingFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         """Returns formatted record message with format settings"""
-        msg: str = filter_datum(self.fields, self.REDACTION,
-                                record.getMessage(), self.SEPARATOR)
-        return (self.FORMAT) % {"name": record.name, "message": msg,
-                                "levelname": record.levelname,
-                                "asctime": self.formatTime(record)}
+        msg: str = super().format(record)
+        return filter_datum(self.fields, self.REDACTION,
+                            msg, self.SEPARATOR)
 
 
 PII_FIELDS: tuple = ("email", "name", "phone", "password", "ssn")
