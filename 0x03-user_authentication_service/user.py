@@ -6,10 +6,10 @@ User Module
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 
-base = declarative_base()
+Base = declarative_base()
 
 
-class User(base, object):
+class User(Base, object):
     """A user class definition"""
 
     __tablename__ = "users"
