@@ -20,7 +20,7 @@ def _hash_password(password: str) -> bytes:
 
 def _generate_uuid() -> str:
     """Returns a random uuid"""
-    return uuid4()
+    return str(uuid4())
 
 
 class Auth:
@@ -56,3 +56,18 @@ class Auth:
         if bcrypt.checkpw(password.encode("utf-8"), user.hashed_password):
             return True
         return False
+
+    def create_session(self, email: str) -> str:
+        """
+        Returns the generated user's session id with the user
+        corresponding to the email in the database
+        """
+        user = None
+        try:
+            user = self._db.find_user_by(email=email)
+        except BaseException:
+            pass
+        if user:
+            session_id: str = _generate_uuid()
+            self._db.update_user(user.id, session_id=session_id)
+            return session_id
