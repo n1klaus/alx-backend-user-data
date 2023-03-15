@@ -32,7 +32,7 @@ def users():
 
 @app.route("/sessions", methods=["POST"], strict_slashes=False)
 def login():
-    """User login endpoint"""
+    """Session login endpoint"""
     email: str = request.form.get("email")
     password: str = request.form.get("password")
     if AUTH.valid_login(email, password):
@@ -43,14 +43,26 @@ def login():
     abort(401)
 
 
+@app.route("/profile", methods=["GET"], strict_slashes=False)
+def profile():
+    """User profile data endpoint"""
+    session_id: str = request.cookies.get("session_id")
+    if session_id:
+        user = AUTH.get_user_from_session_id(session_id)
+        if user:
+            return jsonify({"email": user.email}), 200
+    abort(403)
+
+
 @app.route("/sessions", methods=["DELETE"], strict_slashes=False)
 def logout():
-    """Deletes session id associated with user"""
+    """Session logout endpoint"""
     session_id: str = request.cookies.get("session_id")
-    user = AUTH.get_user_from_session_id(session_id)
-    if user:
-        AUTH.destroy_session(user.id)
-        return redirect(url_for(root))
+    if session_id:
+        user = AUTH.get_user_from_session_id(session_id)
+        if user:
+            AUTH.destroy_session(user.id)
+            return redirect(url_for(root))
     abort(403)
 
 
