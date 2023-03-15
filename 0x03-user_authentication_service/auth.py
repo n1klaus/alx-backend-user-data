@@ -22,10 +22,11 @@ class Auth:
     """
 
     def __init__(self):
+        """Instantiates database instance"""
         self._db = DB()
 
     def register_user(self, email: str, password: str) -> TypeVar("User"):
-        """"""
+        """Registers and returns a new user from credentials"""
         user = None
         try:
             user = self._db.find_user_by(email=email)
