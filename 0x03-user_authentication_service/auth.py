@@ -6,6 +6,7 @@ Authentication module
 import bcrypt
 from db import DB
 from typing import TypeVar
+from uuid import uuid4, UUID
 
 
 def _hash_password(password: str) -> bytes:
@@ -15,6 +16,11 @@ def _hash_password(password: str) -> bytes:
         hashed_pw: bytes = bcrypt.hashpw(password.encode("utf-8"), salt)
         return hashed_pw
     return None
+
+
+def _generate_uuid() -> str:
+    """Returns a random uuid"""
+    return str(uuid4())
 
 
 class Auth:
