@@ -2,7 +2,7 @@
 """Basic Flask app"""
 
 from auth import Auth
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, abort, Response
 
 
 AUTH = Auth()
@@ -28,6 +28,19 @@ def users():
         raise
     except BaseException:
         return jsonify({"message": "email already registered"}), 400
+
+
+@app.route("/sessions", methods=["POST"], strict_slashes=False)
+def login():
+    """User login endpoint"""
+    email: str = request.form.get("email")
+    password: str = request.form.get("password")
+    if AUTH.valid_login(email, password):
+        session_id: str = AUTH.create_session(email)
+        resp: Response = jsonify({"email": email, "message": "logged in"})
+        resp.set_cookie(key="session_id", value=session_id)
+        return resp
+    abort(401)
 
 
 if __name__ == "__main__":
