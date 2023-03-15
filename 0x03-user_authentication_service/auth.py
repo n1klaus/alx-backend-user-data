@@ -7,6 +7,7 @@ import bcrypt
 from db import DB
 from typing import TypeVar
 from uuid import uuid4, UUID
+from user import User
 
 
 def _hash_password(password: str) -> bytes:
@@ -31,7 +32,7 @@ class Auth:
         """Instantiates database instance"""
         self._db = DB()
 
-    def register_user(self, email: str, password: str) -> TypeVar("User"):
+    def register_user(self, email: str, password: str) -> User:
         """Registers and returns a new user from credentials"""
         user = None
         try:
@@ -71,3 +72,14 @@ class Auth:
             session_id: str = _generate_uuid()
             self._db.update_user(user.id, session_id=session_id)
             return session_id
+
+    def get_user_from_session_id(self, session_id: str) -> User:
+        """Returns user from session id"""
+        if session_id is None:
+            return None
+        user = None
+        try:
+            user = self._db.find_user_by(session_id=session_id)
+        except BaseException:
+            pass
+        return user
