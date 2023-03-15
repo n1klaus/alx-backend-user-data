@@ -4,6 +4,8 @@ Authentication module
 """
 
 import bcrypt
+from db import DB
+from typing import TypeVar
 
 
 def _hash_password(password: str) -> bytes:
@@ -13,3 +15,24 @@ def _hash_password(password: str) -> bytes:
         hashed_pw: bytes = bcrypt.hashpw(password.encode("utf-8"), salt)
         return hashed_pw
     return None
+
+
+class Auth:
+    """Auth class to interact with the authentication database.
+    """
+
+    def __init__(self):
+        self._db = DB()
+
+    def register_user(self, email: str, password: str) -> TypeVar("User"):
+        """"""
+        user = None
+        try:
+            user = self._db.find_user_by(email=email)
+        except BaseException:
+            pass
+        if user:
+            raise ValueError(f"User {email} already exists.")
+        hashed_pw: bytes = _hash_password(password)
+        user = self._db.add_user(email, hashed_pw)
+        return user
