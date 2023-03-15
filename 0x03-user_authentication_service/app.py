@@ -68,7 +68,7 @@ def logout():
 
 @app.route("/reset_password", methods=["PUT"], strict_slashes=False)
 def update_password():
-    """"""
+    """Update user password endpoint"""
     email: str = request.form.get("email")
     password: str = request.form.get("new_password")
     reset_token: str = request.form.get("reset_token")
@@ -80,7 +80,7 @@ def update_password():
 
 @app.route("/reset_password", methods=["POST"], strict_slashes=False)
 def get_reset_password_token():
-    """Reset password endpoint"""
+    """Reset user password endpoint"""
     email: str = request.form.get("email")
     if email:
         token: str = AUTH.get_reset_password_token(email)
