@@ -53,3 +53,17 @@ class DB:
                 return user
             raise NoResultFound
         raise InvalidRequestError
+
+    def update_user(self, user_id: int, **kwargs) -> None:
+        """Updates user attributes and commits changes to the database"""
+        user: User = self.find_user_by(id=user_id)
+        if user is None:
+            raise NoResultFound
+        if not kwargs:
+            raise InvalidRequestError
+        for k, v in kwargs.items():
+            if k not in User.__table__.columns:
+                raise ValueError
+            setattr(user, k, v)
+        self._session.add(user)
+        self._session.commit()
