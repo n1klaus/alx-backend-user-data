@@ -4,7 +4,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.exc import NoResultFound, InvalidRequestError
+from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm.session import Session
 from typing import TypeVar
 from user import Base, User
@@ -45,14 +46,16 @@ class DB:
 
     def find_user_by(self, **kwargs) -> User:
         """Returns the first result of the user object"""
-        if kwargs:
-            user: User = self._session.query(User) \
-                .filter_by(**kwargs) \
-                .first()
-            if user:
+        try:
+            if kwargs:
+                user: User = self._session.query(User) \
+                    .filter_by(**kwargs) \
+                    .first()
+                if user is None:
+                    raise NoResultFound
                 return user
-            raise NoResultFound
-        raise InvalidRequestError
+        except BaseException:
+            raise InvalidRequestError
 
     def update_user(self, user_id: int, **kwargs) -> None:
         """Updates user attributes and commits changes to the database"""
