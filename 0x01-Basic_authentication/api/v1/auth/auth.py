@@ -15,9 +15,12 @@ class Auth:
         """Checks if authentication is required for path"""
         if path is None or not excluded_paths:
             return True
-        if re.match(rf"{path}.*") or \
-                path in excluded_paths or f"{path}/" in excluded_paths:
+        if path in excluded_paths or f"{path}/" in excluded_paths:
             return False
+        for _path in excluded_paths:
+            search_path = _path.translate({ord("*"), None})
+            if re.match(rf"{search_path}.*", path):
+                return False
         return True
 
     def authorization_header(self, request=None) -> str:
