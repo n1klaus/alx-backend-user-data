@@ -5,6 +5,7 @@ Module for authentication handling
 
 from flask import request
 from typing import List, TypeVar
+import re
 
 
 class Auth:
@@ -14,7 +15,8 @@ class Auth:
         """Checks if authentication is required for path"""
         if path is None or not excluded_paths:
             return True
-        if path in excluded_paths or f"{path}/" in excluded_paths:
+        if re.match(rf"{path}.*") or \
+                path in excluded_paths or f"{path}/" in excluded_paths:
             return False
         return True
 
