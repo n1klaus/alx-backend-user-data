@@ -11,10 +11,10 @@ SESSION_DURATION = os.getenv("SESSION_DURATION", None)
 
 
 class SessionExpAuth(SessionAuth):
-    """"""
+    """Session authentication scheme"""
 
     def __init__(self):
-        """"""
+        """Initializes instances with required attributes"""
         try:
             self.session_duration = int(SESSION_DURATION)
         except BaseException:
