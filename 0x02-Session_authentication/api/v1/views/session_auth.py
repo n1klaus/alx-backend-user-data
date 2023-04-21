@@ -5,12 +5,13 @@
 from api.v1.views import app_views
 from models.user import User
 from flask import request, jsonify, Response, abort
+from typing import Any
 import os
 
 
 @app_views.route("/auth_session/login", methods=["POST"],
                  strict_slashes=False)
-def session_login() -> Response:
+def session_login() -> Any:
     """Handles session login"""
     email: str = request.form.get("email")
     if not email:
@@ -26,7 +27,7 @@ def session_login() -> Response:
         return {"error": "wrong password"}, 401
     from api.v1.app import auth
     session_id: str = auth.create_session(user.id)
-    response: Response = jsonify(user.to_json())
+    response: Any = jsonify(user.to_json())
     SESSION_NAME: str = os.getenv("SESSION_NAME")
     response.set_cookie(SESSION_NAME, session_id)
     return response
