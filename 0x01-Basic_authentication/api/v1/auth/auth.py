@@ -18,7 +18,7 @@ class Auth:
         if path in excluded_paths or f"{path}/" in excluded_paths:
             return False
         for _path in excluded_paths:
-            search_path = _path.translate({ord("*"), None})
+            search_path = _path.translate({ord("*"): None})
             if re.match(rf"{search_path}.*", path):
                 return False
         return True
