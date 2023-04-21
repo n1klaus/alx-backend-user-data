@@ -31,14 +31,14 @@ class SessionExpAuth(SessionAuth):
             "user_id ": user_id,
             "created_at": datetime.now()
         }
-        SessionExpAuth.user_id_by_session_id[session_id] = session_dictionary
+        self.user_id_by_session_id[session_id] = session_dictionary
         return session_id
 
     def user_id_for_session_id(self, session_id: str = None) -> str:
         """Returns a user_id based on session_id"""
         if session_id is None or not isinstance(session_id, str):
             return None
-        sd = SessionExpAuth.user_id_by_session_id.get(session_id)
+        sd = self.user_id_by_session_id.get(session_id)
         if sd is None or self.session_duration > 0 or \
             "created_at" not in sd or sd.get("created_at") + timedelta(
                 seconds=self.session_duration) < datetime.now():
